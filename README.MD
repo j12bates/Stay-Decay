@@ -1,4 +1,4 @@
-# Stay & Decay
+# Stay and Decay
 _v1.0_
 
 This game is played using a 3x3[^1] matrix of two-sided chips/coins.
