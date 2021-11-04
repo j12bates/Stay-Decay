@@ -20,6 +20,7 @@ The idea is to maximize decay on one's order whilst maximizing stay on one's opp
 ## Diagrams (A,B)
 
 ### Order (Fig.1)
+    |     | 
 --- | --- | ---
 0,2 | 1,5 | 2,8
 3,1 | 4,4 | 5,7
