@@ -1,5 +1,5 @@
 # Stay and Decay
-_v1.0_
+_v1.0.1_
 
 This game is played using a 3x3[^1] matrix of two-sided chips/coins.
 Two players can play, with one player (A) facing the horizontal and one (B) facing the vertical.
@@ -8,8 +8,8 @@ The object is to create as many **changes in the chip-state**[^2] on one's order
 
 The matrix starts will all chips on one state, except the centre [[Fig.3]](#matrix-initialization-fig3).
 On one's turn, one must flip a solitary chip on the matrix.
-A chip cannot be touched twice within three consecutive turns.
-In other words, both players must each take a turn before touching the same chip.
+Both players must each take a turn before touching the same chip.
+This also applies to the centre after the game starts.
 The game ends when a diagonal on the matrix is entirely the same state [[Fig.4]](#scoring-example-with-game-end-fig4).
 
 [^1]: The game will be tested out on larger odd-numbered matrices.

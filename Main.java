@@ -26,6 +26,9 @@ class Main {
     static String matrixSeparator  = " │ ";
 
     public static void main(String[] args) {
+        // Print Game Version
+        System.out.println("Game version 1.0.1");
+
         // Primary Game Loop
         do {
             printMatrix();

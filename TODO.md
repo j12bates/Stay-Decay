@@ -1,6 +1,6 @@
 # To-Do
 
-- Prompt individual players
+- ~~Prompt individual players~~
 - Display chip orders for each player
 - Make chip states bold
 - Make sticky chips red
