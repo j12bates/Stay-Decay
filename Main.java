@@ -32,8 +32,9 @@ class Main {
         // Primary Game Loop
         do {
             printMatrix();
+            printOrders();
             score();
-            System.out.println(score[0] + "," + score[1]);
+            System.out.println("Score: " + score[0] + "," + score[1]);
 
             // The player must make a valid move
             do {
@@ -50,6 +51,7 @@ class Main {
 
         // End of Game
         printMatrix();
+        printOrders();
         score();
         System.out.println(
             "Player " + 
@@ -190,5 +192,20 @@ class Main {
         }
 
         System.out.println(matrixSeparator);
+    }
+
+    // Print the players' chip orders
+    static void printOrders() {
+        System.out.print("A: ");
+        for (boolean i : order(true)) {
+            System.out.print((i ? 'X' : 'O') + " ");
+        }
+        System.out.println();
+        
+        System.out.print("B: ");
+        for (boolean i : order(false)) {
+            System.out.print((i ? 'X' : 'O') + " ");
+        }
+        System.out.println();
     }
 }
