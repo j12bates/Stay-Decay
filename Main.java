@@ -94,24 +94,33 @@ class Main {
         score[0] = 0;                           // Reset scores
         score[1] = 0;
 
-        // Player A goes by rows
-        for (boolean[] row : matrix) {
-            for (boolean chip : row) {
-                if (chip != p) score[0]++;      // Add a point for each change
-                p = chip;                       // Keep track of last state
-            }
+        for (boolean i : order(true)) {         // Iterate through chip order
+            if (i != p) score[0]++;
+            p = i;
         }
 
         p = matrix[2][0];
 
-        // Player B goes by columns
-        for (int col = 0; col < 3; col++) {
-            for (int row = 2; row > -1; row--) {
-                if (matrix[row][col] != p) score[1]++;
-                p = matrix[row][col];
-            }
+        for (boolean i : order(false)) {
+            if (i != p) score[1]++;
+            p = i;
         }
     }
+
+    // Get player's chip order
+    static boolean[] order(boolean player) {
+        boolean order[] = new boolean[9];       // Array of ordered chip-states
+
+        // Loop through all chips
+        for (int i = 0; i < 9; i++) {
+            order[i] = player 
+                ? matrix [i / 3] [i % 3]        // Player A goes by row
+                : matrix [2 - i % 3] [i / 3]    // Player B goes by col (and row is inverted)
+            ;
+        }
+
+        return order;
+    } 
 
     // Check if the game is over
     static boolean gameExists() {
