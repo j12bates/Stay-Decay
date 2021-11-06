@@ -29,8 +29,14 @@ class Main {
     // ANSI escape sequences for formatting
     static String fmtClear          = "\033[0m";
     static String fmtChipState      = "\033[1m";
-    static String fmtOrderChange    = "\033[31;1m";
-    static String fmtChipSticky     = "\033[101;1m";
+    static String fmtStateX         = "\033[34m";
+    static String fmtStateO         = "\033[31m";
+    static String fmtOrderChange    = "\033[92;1m";
+    static String fmtChipSticky     = "\033[47;1m";
+    static String fmtInvalid        = "\033[41m";
+
+    static String resetCursor       = "\033[14F\033[J";
+    static String upCursor          = "\033[2F\033[J";
 
     public static void main(String[] args) {
         // Print Game Version
@@ -43,18 +49,21 @@ class Main {
             printOrder(false);
             score();
             System.out.println("Score: " + score[0] + "," + score[1]);
+            System.out.println();
 
             // The player must make a valid move
             do {
                 try {
                     turn();
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                    // Print any error message in red
+                    System.out.println(upCursor + fmtInvalid + e.getMessage() + fmtClear);
                     continue;
                 }
                 break;
             } while (true);
 
+            System.out.print(resetCursor);
         } while (gameExists());
 
         // End of Game
@@ -155,10 +164,13 @@ class Main {
 
         switch (chip.charAt(0)) {                   // Interpret column
             case 'C':
+            case 'c':
                 index++;
             case 'B':
+            case 'b':
                 index++;
             case 'A':
+            case 'a':
                 break;
 
             default:                                // Column is not valid
@@ -184,7 +196,7 @@ class Main {
                     matrixSeparator + 
                     (3 * row + col == sticky[0] || 3 * row + col == sticky[1]   // If the chip is sticky, highlight it, otherwise, just bold
                     ? fmtChipSticky : fmtChipState) +
-                    (matrix[row][col] ? "X" : "O") +                            // Print the appropriate symbol for the chip state
+                    (matrix[row][col] ? fmtStateX + "X" : fmtStateO + "O") +    // Print the appropriate symbol for the chip state
                     fmtClear
                 );
             }
@@ -202,7 +214,7 @@ class Main {
 
         for (boolean i : order(player)) {
             if (i != p) System.out.print(fmtOrderChange);
-            System.out.print((i ? "X" : "O") + " " + fmtClear);
+            System.out.print((i ? "X" : "O") + fmtClear + " ");
             p = i;
         }
 
