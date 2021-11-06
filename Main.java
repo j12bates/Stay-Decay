@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 class Main {
-    // Matrix of chip-states
+    // Matrix of Chip-States
     static boolean[][] matrix = {
         {false, false, false}, 
         {false, true, false}, 
@@ -24,6 +24,10 @@ class Main {
     static String matrixDivider    = " ├───┼───┼───┼───┤ ";
     static String matrixFoot       = " └───┴───┴───┴───┘ ";
     static String matrixSeparator  = " │ ";
+
+    // ANSI escape sequences for formatting
+    static String fmtClear         = "\033[0m";
+    static String fmtChipState     = "\033[1m";
 
     public static void main(String[] args) {
         // Print Game Version
@@ -161,33 +165,37 @@ class Main {
 
     // Print the Entire Matrix
     static void printMatrix() {
-        char[] headerRow = {'A', 'B', 'C'};                     // Array of column symbols
+        String[] headerRow = {"A", "B", "C"};                   // Array of column symbols
 
         System.out.println(matrixHead);                         // Print the top of the matrix
-        printRow(' ', headerRow);
+        printRow(" ", headerRow);
 
         // Print every row
         for (int row = 0; row < 3; row++) {
             System.out.println(matrixDivider);
             
-            char[] rowSym = new char[3];                        // Array to hold characters for chip-states
+            String[] rowSym = new String[3];                    // Array to hold characters for chip-states
             
             for (int chip = 0; chip < 3; chip++) {
-                rowSym[chip] = matrix[row][chip] ? 'X' : 'O';   // Use an X or an O
+                rowSym[chip] = 
+                    fmtChipState +                              // Format in bold
+                    (matrix[row][chip] ? 'X' : 'O') +           // Use an X or an O
+                    fmtClear
+                ;
             }
 
-            printRow((char) (row + 1 + '0'), rowSym);           // Print this as a row
+            printRow(row + 1 + "", rowSym);                     // Print this as a row
         }
 
         System.out.println(matrixFoot);                         // Print the bottom of the matrix
     }
 
     // Print a Matrix Row
-    static void printRow(char label, char[] row) {
+    static void printRow(String label, String[] row) {
         System.out.print(matrixSeparator + label);
 
         // Print each character in the row
-        for (char i : row) {
+        for (String i : row) {
             System.out.print(matrixSeparator + i);
         }
 
