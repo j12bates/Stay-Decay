@@ -20,14 +20,17 @@ class Main {
     static String exStuck = "Chip is Stuck";
 
     // Matrix graphics
-    static String matrixHead       = " ┌───┬───┬───┬───┐ ";
-    static String matrixDivider    = " ├───┼───┼───┼───┤ ";
-    static String matrixFoot       = " └───┴───┴───┴───┘ ";
-    static String matrixSeparator  = " │ ";
+    static String matrixHead        = " ┌───┬───┬───┬───┐ ";
+    static String matrixHeading     = " │   │ A │ B │ C │ ";
+    static String matrixDivider     = " ├───┼───┼───┼───┤ ";
+    static String matrixFoot        = " └───┴───┴───┴───┘ ";
+    static String matrixSeparator   = " │ ";
 
     // ANSI escape sequences for formatting
-    static String fmtClear         = "\033[0m";
-    static String fmtChipState     = "\033[1m";
+    static String fmtClear          = "\033[0m";
+    static String fmtChipState      = "\033[1m";
+    static String fmtOrderChange    = "\033[31;1m";
+    static String fmtChipSticky     = "\033[101;1m";
 
     public static void main(String[] args) {
         // Print Game Version
@@ -36,7 +39,8 @@ class Main {
         // Primary Game Loop
         do {
             printMatrix();
-            printOrders();
+            printOrder(true);
+            printOrder(false);
             score();
             System.out.println("Score: " + score[0] + "," + score[1]);
 
@@ -55,7 +59,8 @@ class Main {
 
         // End of Game
         printMatrix();
-        printOrders();
+        printOrder(true);
+        printOrder(false);
         score();
         System.out.println(
             "Player " + 
@@ -165,55 +170,42 @@ class Main {
 
     // Print the Entire Matrix
     static void printMatrix() {
-        String[] headerRow = {"A", "B", "C"};                   // Array of column symbols
-
-        System.out.println(matrixHead);                         // Print the top of the matrix
-        printRow(" ", headerRow);
+        System.out.println(matrixHead);                                         // Print the top of the matrix
+        System.out.println(matrixHeading);
 
         // Print every row
-        for (int row = 0; row < 3; row++) {
-            System.out.println(matrixDivider);
+        for (int row = 0; row < matrix.length; row++) {
+            System.out.println(matrixDivider);                                  // Print a divider between rows
+            System.out.print(matrixSeparator + (row + 1));                      // Row number
             
-            String[] rowSym = new String[3];                    // Array to hold characters for chip-states
-            
-            for (int chip = 0; chip < 3; chip++) {
-                rowSym[chip] = 
-                    fmtChipState +                              // Format in bold
-                    (matrix[row][chip] ? 'X' : 'O') +           // Use an X or an O
+            // Print every chip
+            for (int col = 0; col < matrix[row].length; col++) {
+                System.out.print(
+                    matrixSeparator + 
+                    (3 * row + col == sticky[0] || 3 * row + col == sticky[1]   // If the chip is sticky, highlight it, otherwise, just bold
+                    ? fmtChipSticky : fmtChipState) +
+                    (matrix[row][col] ? "X" : "O") +                            // Print the appropriate symbol for the chip state
                     fmtClear
-                ;
+                );
             }
 
-            printRow(row + 1 + "", rowSym);                     // Print this as a row
+            System.out.println(matrixSeparator);
         }
 
         System.out.println(matrixFoot);                         // Print the bottom of the matrix
     }
 
-    // Print a Matrix Row
-    static void printRow(String label, String[] row) {
-        System.out.print(matrixSeparator + label);
+    // Print a player's chip order
+    static void printOrder(boolean player) {
+        boolean p = order(player)[0];
+        System.out.print((player ? "A" : "B") + ": ");
 
-        // Print each character in the row
-        for (String i : row) {
-            System.out.print(matrixSeparator + i);
+        for (boolean i : order(player)) {
+            if (i != p) System.out.print(fmtOrderChange);
+            System.out.print((i ? "X" : "O") + " " + fmtClear);
+            p = i;
         }
 
-        System.out.println(matrixSeparator);
-    }
-
-    // Print the players' chip orders
-    static void printOrders() {
-        System.out.print("A: ");
-        for (boolean i : order(true)) {
-            System.out.print((i ? 'X' : 'O') + " ");
-        }
         System.out.println();
-        
-        System.out.print("B: ");
-        for (boolean i : order(false)) {
-            System.out.print((i ? 'X' : 'O') + " ");
-        }
-        System.out.println();
-    }
+    }        
 }
