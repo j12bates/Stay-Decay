@@ -40,7 +40,7 @@ class Main {
 
     public static void main(String[] args) {
         // Print Game Version
-        System.out.println("Game version 1.0.1");
+        System.out.println("Game version 1.1");
 
         // Primary Game Loop
         do {
@@ -71,9 +71,15 @@ class Main {
         printOrder(true);
         printOrder(false);
         score();
+
+        boolean winner;
+
+        if (score[0] == score[1]) winner = player;
+        else winner = score[0] > score[1];
+
         System.out.println(
             "Player " + 
-            (score[0] > score[1] ? "A" : "B") + 
+            (winner ? "A" : "B") + 
             " Wins " + 
             score[0] + "," + score[1]
         );
