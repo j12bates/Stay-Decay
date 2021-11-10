@@ -44,6 +44,8 @@ class Main {
 
         // Primary Game Loop
         do {
+            System.out.println(encodeChipID(sticky[0]));
+
             printMatrix();
             printOrder(true);
             printOrder(false);
@@ -157,7 +159,7 @@ class Main {
         );
     }
 
-    // Convert a Chip ID (C2) to an integer (7)
+    // Convert a Chip ID to an integer
     static int decodeChipID(String chip) throws Exception {
         int index = 0;
 
@@ -184,6 +186,17 @@ class Main {
         }
 
         return index;
+    }
+
+    // Convert an Integer to a Chip ID
+    static String encodeChipID(int index) {
+        String chip = "";
+        index %= 9;
+
+        chip += (char) ((index % 3) + 'A');
+        chip += index / 3 + 1;
+
+        return chip;
     }
 
     // Print the Entire Matrix
