@@ -43,12 +43,13 @@ class Main {
     public static void main(String[] args) {
         // Print Game Version
         System.out.println("Game version 1.1");
-        if (!init()) return;
+        if (!init()) {
+            System.out.println("Incorrectly compiled, exiting");
+            return;
+        }
 
         // Primary Game Loop
         do {
-            System.out.println(encodeChipID(sticky[0]));
-
             printMatrix();
             printOrder(true);
             printOrder(false);
@@ -69,6 +70,7 @@ class Main {
             } while (true);
 
             System.out.print(resetCursor);
+            System.out.println(encodeChipID(sticky[0]));
         } while (gameExists());
 
         // End of Game
@@ -190,12 +192,14 @@ class Main {
 
     // Convert a Chip ID to an integer
     static int decodeChipID(String chip) throws Exception {
+        // Input is invalid
+        if (chip.length() != 2) throw new Exception(exInvalid);
+
         // Interpret row/col
         int row = chip.charAt(1) - '1';
         int col = chip.charAt(0) - 'A';
 
         if (
-            chip.length() != 2 ||                   // Input is not 2 chars long
             row >= x || row < 0 ||                  // Row is not valid
             col >= x || col < 0                     // Col is not valid
         ) throw new Exception(exInvalid);
