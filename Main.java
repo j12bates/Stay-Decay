@@ -2,13 +2,11 @@ import java.util.Scanner;
 
 class Main {
     // Matrix of Chip-States
-    static final int x = 3;
-    static boolean[][] matrix = new boolean[x][x];
+    static int x = 3;
+    static boolean[][] matrix;
 
-    static int[] sticky = {                     // Two sticky chips
-        x % 2 == 0 ? -1 : (x * x / 2),
-         -1
-    };
+    // Two sticky chips
+    static int[] sticky = {-1, -1};
 
     static int[] score = new int[2];            // Current scores
     static boolean player = true;               // Current player (A)
@@ -21,10 +19,8 @@ class Main {
     static String exStuck = "Chip is Stuck";
 
     // Matrix graphics
-    static String matrixDivider     = " ├" + "───┼".repeat(x) + "───┤"; 
-
-    static String matrixHead        = matrixDivider.replace('├', '┌').replace('┼', '┬').replace('┤', '┐');
-    static String matrixFoot        = matrixDivider.replace('├', '└').replace('┼', '┴').replace('┤', '┘');
+    static String matrixDivider;
+    static String matrixHead, matrixFoot;
 
     static String matrixSeparator   = " │ ";
 
@@ -37,10 +33,14 @@ class Main {
     static String fmtChipSticky     = "\033[47;1m";
     static String fmtInvalid        = "\033[41m";
 
-    static String resetCursor       = "\033[" + (8 + 2 * x) + "F\033[J";
+    static String resetCursor;
     static String upCursor          = "\033[2F\033[J";
 
     public static void main(String[] args) {
+        if (args.length > 0) {
+            x = Integer.parseInt(args[0]);
+        }
+
         // Print Game Version
         System.out.println("Game version 1.1");
         if (!init()) {
@@ -94,6 +94,8 @@ class Main {
 
     // Initialize matrix
     static boolean init() {
+        matrix = new boolean[x][x];                         // Initialize matrix
+
         for (int row = 0; row < x; row++) {
             for (int col = 0; col < x; col++) {
                 matrix[row][col] =                          // For any matrix, do the centre
@@ -104,6 +106,13 @@ class Main {
                     col <= x / 2 && col >= x / 2 - 1;
             }
         }
+
+        sticky[0] = x % 2 == 0 ? -1 : (x * x / 2);          // Regenerate dependencies
+        matrixDivider = " ├" + "───┼".repeat(x) + "───┤"; 
+        resetCursor = "\033[" + (8 + 2 * x) + "F\033[J";
+
+        matrixHead = matrixDivider.replace('├', '┌').replace('┼', '┬').replace('┤', '┐');
+        matrixFoot = matrixDivider.replace('├', '└').replace('┼', '┴').replace('┤', '┘');
 
         return x <= 9;
     }
