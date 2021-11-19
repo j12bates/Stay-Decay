@@ -17,6 +17,7 @@ class Game {
     static String prompt = "Col-Row to flip";
     static String exInvalid = "Invalid Chip ID";
     static String exStuck = "Chip is Stuck";
+    static String exDisconnected = "Disconnected, Game Over";
 
     // Matrix graphics
     static String matrixDivider;
@@ -34,7 +35,8 @@ class Game {
     static String fmtInvalid        = "\033[41m";
 
     static String resetCursor;
-    static String upCursor          = "\033[2F\033[J";
+    static String upCursor          = "\033[1F\033[J";
+    static String promptCursor      = "\033[2F\033[J";
 
     public static void main(int p_x, boolean p_localPlayer) {
         x = p_x;
@@ -62,17 +64,22 @@ class Game {
                     turn();
                 } catch (Exception e) {
                     // Print any error message in red
-                    System.out.println(upCursor + fmtInvalid + e.getMessage() + fmtClear);
+                    System.out.println(promptCursor + fmtInvalid + e.getMessage() + fmtClear);
                     continue;
                 }
                 break;
             } while (true);
 
-            // Output the chip flipped
-            System.out.print(resetCursor);
+            try {
+                // Output the chip flipped
+                if (player == localPlayer) System.out.print(upCursor);
+                System.out.print(resetCursor);
 
-            System.out.println(encodeChipID(sticky[0]));
-            output(encodeChipID(sticky[0]));
+                output(encodeChipID(sticky[0]));
+            } catch (Exception e) {
+                System.out.println(fmtInvalid + e.getMessage() + fmtClear);
+                break;
+            }
 
             // Next player
             player = !player;
@@ -113,9 +120,10 @@ class Game {
             }
         }
 
-        sticky[0] = x % 2 == 0 ? -1 : (x * x / 2);          // Regenerate dependencies
-        matrixDivider = " ├" + "───┼".repeat(x) + "───┤"; 
-        resetCursor = "\033[" + (8 + 2 * x) + "F\033[J";
+        // Generate dependencies
+        sticky[0] = x % 2 == 0 ? -1 : (x * x / 2);          // Initial chip to play
+        resetCursor = "\033[" + (7 + 2 * x) + "F\033[J";    // Cursor reset for re-drawing
+        matrixDivider = " ├" + "───┼".repeat(x) + "───┤";   // Matrix division line
 
         matrixHead = matrixDivider.replace('├', '┌').replace('┼', '┬').replace('┤', '┐');
         matrixFoot = matrixDivider.replace('├', '└').replace('┼', '┴').replace('┤', '┘');
@@ -124,19 +132,29 @@ class Game {
     }
 
     // Get Input
-    static String input() {
-        if (player == localPlayer)
-            return Main.localInput.nextLine();
-        else
-            return Main.remoteInput.nextLine();
+    static String input() throws Exception {
+        try {
+            if (player == localPlayer)
+                return Main.localInput.nextLine();
+            else
+                return Main.remoteInput.nextLine();
+        }
+        catch (Exception e) {
+            throw new Exception(exDisconnected);
+        }
     }
 
     // Output
-    static void output(String data) {
-        if (player == localPlayer)
-            Main.localOutput.println(data);
-        else
+    static void output(String data) throws Exception {
+        try {
+            if (player == localPlayer)
+                Main.localOutput.println(data);
+
             Main.remoteOutput.println(data);
+        }
+        catch (Exception e) {
+            throw new Exception(exDisconnected);
+        }
     }
 
     // Run one turn
