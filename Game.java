@@ -42,8 +42,8 @@ class Game {
         x = p_x;
         localPlayer = p_localPlayer;
 
-        // Print Game Version
-        System.out.println("Game version 1.1");
+        // Initialize
+        System.out.println(Main.versionString);
         if (!init()) {
             System.out.println("Incorrectly compiled, exiting");
             return;

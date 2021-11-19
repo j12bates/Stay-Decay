@@ -9,15 +9,18 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 class Main {
-    // Matrix length (default)
-    static int x = 3;
+    // Client Configuration
+    static boolean localPlayer;         // Player the client is playing (A)
+    static boolean server;
 
-    // Player the client is playing (A)
-    static boolean localPlayer;
+    static int length = 3;              // Matrix length
 
     // Network Sockets
     static Socket socket;
     static final int port = 8888;
+
+    // Messages
+    public static String versionString = "Game version 1.1";
 
     // Input/Output Streams
     public static Scanner remoteInput;
@@ -29,7 +32,7 @@ class Main {
     // Initialize game
     public static void main(String[] args) {
         // If the matrix length is specified
-        if (args.length > 0) x = Integer.parseInt(args[0]);
+        if (args.length > 0) length = Integer.parseInt(args[0]);
         
         // Specify Local or Networked
         try {
@@ -40,20 +43,24 @@ class Main {
             e.printStackTrace();
             return;
         }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            return;
+        }
 
-        Game.main(x, localPlayer);
-
-        localOutput.println("henlo, worlnd");
-        localOutput.println(remoteInput.nextLine());
+        Game.main(length, localPlayer);
     }
 
     // Initialize I/O Streams
-    static void initStreams(String remoteAddress) throws IOException {
+    static void initStreams(String remoteAddress) throws Exception {
         // This is a networked game
-        if (!remoteAddress.equals("")) {
+        if (!remoteAddress.equals("") && !remoteAddress.equals("local")) {
 
             // Is this supposed to be a server?
-            if (remoteAddress.equals("0.0.0.0")) {
+            server = remoteAddress.equals("server") || remoteAddress.equals("0.0.0.0");
+
+            // Start up a server
+            if (server) {
                 socket = new ServerSocket(port).accept();
                 localPlayer = true;
             }
@@ -61,7 +68,6 @@ class Main {
             // Connect to a server
             else {
                 socket = new Socket(remoteAddress, port);
-                localPlayer = false;
             }
 
             // Get I/O Streams
@@ -71,8 +77,24 @@ class Main {
             localOutput = new PrintStream(
                 socket.getOutputStream()
             );
+
+            // Send configuration to client
+            if (server) {
+                localOutput.println(versionString);
+                localOutput.println(!localPlayer ? "A" : "B");
+                localOutput.println(length);
+            }
+ 
+            // If a client, verify and accept the configuration
+            else {
+                if (!remoteInput.nextLine().equals(versionString))
+                    throw new Exception("Server is a different game version.");
+
+                localPlayer = remoteInput.nextLine().equals("A");
+                length = Integer.parseInt(remoteInput.nextLine());
+            }
         }
-        
+ 
         // This is a fully local game
         else {
             remoteInput = localInput;
