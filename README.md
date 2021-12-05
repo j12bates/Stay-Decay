@@ -1,20 +1,19 @@
 # Stay and Decay
-_v1.1_
+_v1.2_
 
-This game is played using a 3x3[^1] matrix of two-sided chips/coins.
+This game is played using a 3x3 matrix (or larger odd-sided square matrix) of two-sided chips/coins.
 Two players can play, with one player (A) facing the horizontal and one (B) facing the vertical.
 The order of the chips is left-to-right and then top-to-bottom from each player's perspective [[Fig.1]](#order-fig1).
-The object is to create as many **changes in the chip-state**[^2] on one's order [[Fig.2]](#scoring-example-fig2).
+The object is to create as many **changes in the chip-state**[^1] on one's order [[Fig.2]](#scoring-example-fig2).
 
 The matrix starts will all chips on one state, except the centre [[Fig.3]](#matrix-initialization-fig3).
 On one's turn, one must flip a solitary chip on the matrix.
-Both players must each take a turn before touching the same chip.
+Both players must each take a turn (plus one for every two extra chips per row/col) before touching the same chip.
 This also applies to the centre after the game starts.
 The game ends when a diagonal on the matrix is entirely the same state [[Fig.4]](#scoring-example-with-game-end-fig4).
 If both players have the same score, the next player wins.
 
-[^1]: The game will be tested out on larger odd-numbered matrices.
-[^2]: If two consecutive chips are of the same state, this is called "stay."
+[^1]: If two consecutive chips are of the same state, this is called "stay."
 If they are of different states, this is called "decay."
 The idea is to maximize decay on one's order whilst maximizing stay on one's opponent's.
 

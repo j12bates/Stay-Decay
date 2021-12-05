@@ -5,11 +5,11 @@ class Main {
     static int x = 3;
     static boolean[][] matrix;
 
-    // Two sticky chips
-    static int[] sticky = {-1, -1};
+    // Sticky chips
+    static int[] sticky;
 
     static int[] score = new int[2];            // Current scores
-    static boolean player = true;               // Current player (A)
+    static int turn = 0;                        // Current turn
 
     static Scanner input = new Scanner(System.in);
     
@@ -81,12 +81,12 @@ class Main {
 
         boolean winner;
 
-        if (score[0] == score[1]) winner = player;
+        if (score[0] == score[1]) winner = player();
         else winner = score[0] > score[1];
 
         System.out.println(
             "Player " + 
-            (winner ? "A" : "B") + 
+            playerSymbol() + 
             " Wins " + 
             score[0] + "," + score[1]
         );
@@ -95,7 +95,9 @@ class Main {
     // Initialize matrix
     static boolean init() {
         matrix = new boolean[x][x];                         // Initialize matrix
+        sticky = new int[x - 1];                            // Initialize sticky chips
 
+        // Fill matrix
         for (int row = 0; row < x; row++) {
             for (int col = 0; col < x; col++) {
                 matrix[row][col] =                          // For any matrix, do the centre
@@ -107,7 +109,10 @@ class Main {
             }
         }
 
-        sticky[0] = x % 2 == 0 ? -1 : (x * x / 2);          // Regenerate dependencies
+        // Fill sticky chips
+        for (int i = 0; i < sticky.length; i++) sticky[i] = -1;
+
+        sticky[x - 2] = x % 2 == 0 ? -1 : (x * x / 2);      // Regenerate dependencies
         matrixDivider = " ├" + "───┼".repeat(x) + "───┤"; 
         resetCursor = "\033[" + (8 + 2 * x) + "F\033[J";
 
@@ -117,29 +122,38 @@ class Main {
         return x <= 9;
     }
 
+    // Get player as a boolean
+    static boolean player() {
+        return turn % 2 == 0;
+    }
+
+    // Get player's name
+    static String playerSymbol() {
+        return player() ? "A" : "B";
+    }
+
     // Run one turn
     static void turn() throws Exception {
         // Prompt current player
         System.out.print(
             prompt + 
             " (" + 
-            (player ? "A" : "B") + 
+            playerSymbol() + 
             ") "
         );
 
         int chip = decodeChipID(input.nextLine());          // Get chip
         flip(chip);                                         // Flip chip
 
-        player = !player;
+        turn++;
     }
 
     // Flip a Particular Chip
     static void flip(int chip) throws Exception {
         // Invalidate if this is one of the sticky chips
-        if (chip == sticky[0] || chip == sticky[1]) throw new Exception(exStuck);
+        if (chipSticky(chip)) throw new Exception(exStuck);
 
-        sticky[1] = sticky[0];                  // Shift sticky chips over and stick this one
-        sticky[0] = chip;
+        sticky[turn % (x - 1)] = chip;          // Stick this one in the next sticky slot
 
         matrix [chip / x] [chip % x] = 
         ! matrix [chip / x] [chip % x];         // Flip the boolean on this row/col
@@ -179,6 +193,14 @@ class Main {
 
         return order;
     } 
+
+    // Determine if a chip is sticky
+    static boolean chipSticky(int chip) {
+        // Check through all sticky chips
+        for (int i : sticky) if (chip == i) return true;
+
+        return false;
+    }
 
     // Check if the game is over
     static boolean gameExists() {
@@ -251,8 +273,8 @@ class Main {
             for (int col = 0; col < x; col++) {
                 System.out.print(
                     matrixSeparator + 
-                    (x * row + col == sticky[0] || x * row + col == sticky[1]   // If the chip is sticky, highlight it, otherwise, just bold
-                    ? fmtChipSticky : fmtChipState) +
+                    (chipSticky(x * row + col)
+                    ? fmtChipSticky : fmtChipState) +                           // If the chip is sticky, highlight it, otherwise, just bold
                     (matrix[row][col] ? fmtStateX + "X" : fmtStateO + "O") +    // Print the appropriate symbol for the chip state
                     fmtClear
                 );
@@ -267,7 +289,7 @@ class Main {
     // Print a player's chip order
     static void printOrder(boolean player) {
         boolean p = order(player)[0];
-        System.out.print((player ? "A" : "B") + ": ");
+        System.out.print(playerSymbol() + ": ");
 
         for (boolean i : order(player)) {
             if (i != p) System.out.print(fmtOrderChange);
