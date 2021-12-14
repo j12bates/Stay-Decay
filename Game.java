@@ -38,12 +38,11 @@ class Game {
     static String upCursor          = "\033[1F\033[J";
     static String promptCursor      = "\033[2F\033[J";
 
-    public static void main(int p_x, boolean p_localPlayer) {
-        x = p_x;
+    public static void main(int length, boolean p_localPlayer) {
+        x = length;
         localPlayer = p_localPlayer;
 
         // Initialize
-        System.out.println(Main.versionString);
         if (!init()) {
             System.out.println("Incorrectly compiled, exiting");
             return;
@@ -71,12 +70,14 @@ class Game {
             } while (true);
 
             try {
-                // Output the chip flipped
-                if (player == localPlayer) System.out.print(upCursor);
+                // Set the cursor appropriately (manage the enter at the end of term input)
+                if (player == localPlayer || Main.localInput == Main.remoteInput) System.out.print(upCursor);
                 System.out.print(resetCursor);
 
+                // Output the chip flipped
                 output(encodeChipID(sticky[0]));
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 System.out.println(fmtInvalid + e.getMessage() + fmtClear);
                 break;
             }
@@ -121,12 +122,17 @@ class Game {
         }
 
         // Generate dependencies
-        sticky[0] = x % 2 == 0 ? -1 : (x * x / 2);          // Initial chip to play
+        sticky[0] = x % 2 == 0 ? -1 : (x * x / 2);          // Centre chip sticky for odd boards, but not for even boards
+
         resetCursor = "\033[" + (7 + 2 * x) + "F\033[J";    // Cursor reset for re-drawing
+
         matrixDivider = " ├" + "───┼".repeat(x) + "───┤";   // Matrix division line
 
         matrixHead = matrixDivider.replace('├', '┌').replace('┼', '┬').replace('┤', '┐');
         matrixFoot = matrixDivider.replace('├', '└').replace('┼', '┴').replace('┤', '┘');
+
+        // Print version
+        System.out.println(Main.versionString);
 
         return x <= 9;
     }
