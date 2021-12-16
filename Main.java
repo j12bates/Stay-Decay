@@ -9,7 +9,7 @@ class Main {
     static int[] sticky;
 
     static int[] score = new int[2];            // Current scores
-    static int turn = 0;                        // Current turn
+    static int turn = -1;                       // Current turn
 
     static Scanner input = new Scanner(System.in);
     
@@ -42,7 +42,7 @@ class Main {
         }
 
         // Print Game Version
-        System.out.println("Game version 1.1");
+        System.out.println("Game version 1.2");
         if (!init()) {
             System.out.println("Incorrectly compiled, exiting");
             return;
@@ -50,6 +50,10 @@ class Main {
 
         // Primary Game Loop
         do {
+            // Next turn
+            turn++;
+
+            // Print UI
             printMatrix();
             printOrder(true);
             printOrder(false);
@@ -69,8 +73,9 @@ class Main {
                 break;
             } while (true);
 
+            // Set cursor back up and log turn
             System.out.print(resetCursor);
-            System.out.println(encodeChipID(sticky[0]));
+            System.out.println(encodeChipID(sticky[turn % (x - 1)]));
         } while (gameExists());
 
         // End of Game
@@ -81,12 +86,12 @@ class Main {
 
         boolean winner;
 
-        if (score[0] == score[1]) winner = player();
+        if (score[0] == score[1]) winner = !player();
         else winner = score[0] > score[1];
 
         System.out.println(
             "Player " + 
-            playerSymbol() + 
+            (winner ? "A" : "B") + 
             " Wins " + 
             score[0] + "," + score[1]
         );
@@ -144,8 +149,6 @@ class Main {
 
         int chip = decodeChipID(input.nextLine());          // Get chip
         flip(chip);                                         // Flip chip
-
-        turn++;
     }
 
     // Flip a Particular Chip
