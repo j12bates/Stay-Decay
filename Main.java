@@ -133,17 +133,17 @@ class Main {
     }
 
     // Get player's name
-    static String playerSymbol() {
-        return player() ? "A" : "B";
+    static String playerSymbol(boolean player) {
+        return player ? "A" : "B";
     }
 
     // Run one turn
     static void turn() throws Exception {
         // Prompt current player
         System.out.print(
-            prompt + 
+            prompt +
             " (" + 
-            playerSymbol() + 
+            playerSymbol(player()) + 
             ") "
         );
 
@@ -292,7 +292,7 @@ class Main {
     // Print a player's chip order
     static void printOrder(boolean player) {
         boolean p = order(player)[0];
-        System.out.print(playerSymbol() + ": ");
+        System.out.print(playerSymbol(player) + ": ");
 
         for (boolean i : order(player)) {
             if (i != p) System.out.print(fmtOrderChange);
